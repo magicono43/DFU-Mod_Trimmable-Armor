@@ -1,0 +1,14 @@
+{
+    "ModTitle": "TrimmableArmor",
+    "ModVersion": "1.00",
+    "ModAuthor": "Kirk.O",
+    "ContactInfo": "kirkoliveri@gmail.com",
+    "DFUnity_Version": "0.14.5",
+    "ModDescription": "Adds A Tool That Lets You Change The Current Visual Variant Of Armor Pieces",
+    "GUID": "b907d22d-2dd0-4f65-993f-310677968bd8",
+    "Files": [
+        "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/ItemTemplates.json",
+        "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/Scripts/TrimmableArmorMain.cs"
+    ],
+    "Dependencies": []
+}
