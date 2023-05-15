@@ -3,7 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Author:          Kirk.O
 // Created On: 	    5/13/2021, 3:15 PM
-// Last Edit:		5/13/2023, 6:45 PM
+// Last Edit:		5/15/2023, 5:30 PM
 // Version:			1.00
 // Special Thanks:  
 // Modifier:
@@ -51,7 +51,7 @@ namespace TrimmableArmor
 
             Instance = this;
 
-            DaggerfallUnity.Instance.ItemHelper.RegisterCustomItem(ItemArmorTrimmingTool.templateIndex, ItemGroups.UselessItems1, typeof(ItemArmorTrimmingTool));
+            DaggerfallUnity.Instance.ItemHelper.RegisterCustomItem(ItemArmorTrimmingTool.templateIndex, ItemGroups.UselessItems1, typeof(ItemArmorTrimmingTool)); // Register Graving Chisel item.
 
             PlayerActivate.OnLootSpawned += TrimmableArmorStockShelves_OnLootSpawned;
 
