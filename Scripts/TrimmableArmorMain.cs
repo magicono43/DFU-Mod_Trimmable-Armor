@@ -3,7 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Author:          Kirk.O
 // Created On: 	    5/13/2021, 3:15 PM
-// Last Edit:		5/15/2023, 5:30 PM
+// Last Edit:		5/16/2023, 12:40 AM
 // Version:			1.00
 // Special Thanks:  
 // Modifier:
@@ -102,6 +102,7 @@ namespace TrimmableArmor
             try
             {
                 ConsoleCommandsDatabase.RegisterCommand(GiveTools.name, GiveTools.description, GiveTools.usage, GiveTools.Execute);
+                ConsoleCommandsDatabase.RegisterCommand(MakeMagicItems.name, MakeMagicItems.description, MakeMagicItems.usage, MakeMagicItems.Execute);
             }
             catch (Exception e)
             {
@@ -111,21 +112,38 @@ namespace TrimmableArmor
 
         private static class GiveTools
         {
-            public static readonly string name = "addrepairtools";
-            public static readonly string description = "Adds All Repair Tool Items To Inventory.";
-            public static readonly string usage = "addrepairtools";
+            public static readonly string name = "addtrimmingtools";
+            public static readonly string description = "Adds Armor Trimming Tools To Inventory.";
+            public static readonly string usage = "addtrimmingtools";
 
             public static string Execute(params string[] args)
             {
                 DaggerfallWorkshop.Game.Entity.PlayerEntity playerEntity = GameManager.Instance.PlayerEntity;
 
-                for (int i = 0; i < 6; i++)
+                DaggerfallUnityItem item = ItemBuilder.CreateItem(ItemGroups.UselessItems2, 4760);
+                playerEntity.Items.AddItem(item);
+
+                return "Gave you ALL the armor trimming tool items.";
+            }
+        }
+
+        private static class MakeMagicItems
+        {
+            public static readonly string name = "addmagicarmor";
+            public static readonly string description = "Adds A Bunch Of Random Magic Armor Pieces For Testing.";
+            public static readonly string usage = "addmagicarmor";
+
+            public static string Execute(params string[] args)
+            {
+                DaggerfallWorkshop.Game.Entity.PlayerEntity playerEntity = GameManager.Instance.PlayerEntity;
+
+                for (int i = 0; i < 16; i++)
                 {
-                    DaggerfallUnityItem item = ItemBuilder.CreateItem(ItemGroups.UselessItems2, 800 + i);
+                    DaggerfallUnityItem item = ItemBuilder.CreateRegularMagicItem(-1, 20, GameManager.Instance.PlayerEntity.Gender, GameManager.Instance.PlayerEntity.Race);
                     playerEntity.Items.AddItem(item);
                 }
 
-                return "Gave you ALL the repair tool items.";
+                return "Gave you a bunch of random magic armor.";
             }
         }
     }

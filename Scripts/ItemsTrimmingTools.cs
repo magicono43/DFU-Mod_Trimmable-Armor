@@ -96,10 +96,11 @@ namespace TrimmableArmor
                 for (int i = 0; i < TrimVariantChoices.Count; i++)
                 {
                     string entryName = "";
-                    if (FindCurrentVariant(itemToChooseVariant) == i) { entryName = "(Current)" + TrimVariantChoices[i]; }
+                    if (FindCurrentVariant(itemToChooseVariant) == i) { entryName = "(Current) " + TrimVariantChoices[i]; }
                     else { entryName = TrimVariantChoices[i]; }
                     armorVariantPicker.ListBox.AddItem(entryName);
                 }
+                uiManager.PushWindow(armorVariantPicker);
             }
         }
 
@@ -134,8 +135,8 @@ namespace TrimmableArmor
                         playerEntity.Items.RemoveItem(trimThisItem);
                         playerEntity.Items.AddItem(newItem);
                     }
-                    bool toolBroke = currentCondition <= 5;
-                    LowerConditionWorkaround(5, playerEntity, trimmingToolCollection); // Damages repair tool condition.
+                    bool toolBroke = currentCondition <= 10;
+                    LowerConditionWorkaround(10, playerEntity, trimmingToolCollection); // Damages trimming tool condition.
                     ShowCustomTextBox(toolBroke, newItem); // Shows the specific text-box after trimming an item.
                 }
                 else
@@ -327,8 +328,11 @@ namespace TrimmableArmor
                 newItem.dyeColor = oldItem.dyeColor;
                 newItem.weightInKg = oldItem.weightInKg;
                 newItem.value = oldItem.value;
-                newItem.maxCondition = oldItem.maxCondition;
+                newItem.unknown = oldItem.unknown;
+                newItem.flags = oldItem.flags;
                 newItem.currentCondition = oldItem.currentCondition;
+                newItem.maxCondition = oldItem.maxCondition;
+                newItem.unknown2 = oldItem.unknown2;
                 newItem.enchantmentPoints = oldItem.enchantmentPoints;
                 newItem.message = oldItem.message;
                 newItem.legacyMagic = oldItem.legacyMagic;

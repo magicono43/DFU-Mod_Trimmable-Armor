@@ -8,7 +8,9 @@
     "GUID": "b907d22d-2dd0-4f65-993f-310677968bd8",
     "Files": [
         "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/ItemTemplates.json",
-        "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/Scripts/TrimmableArmorMain.cs"
+        "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/Scripts/ItemsTrimmingTools.cs",
+        "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/Scripts/TrimmableArmorMain.cs",
+        "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/Textures/4760_0-0.png"
     ],
     "Dependencies": []
 }
