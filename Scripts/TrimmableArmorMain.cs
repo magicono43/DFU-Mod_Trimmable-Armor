@@ -3,7 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Author:          Kirk.O
 // Created On: 	    5/13/2021, 3:15 PM
-// Last Edit:		5/16/2023, 12:40 AM
+// Last Edit:		5/16/2023, 8:30 PM
 // Version:			1.00
 // Special Thanks:  
 // Modifier:
@@ -25,8 +25,13 @@ namespace TrimmableArmor
 
         static Mod mod;
 
+        // Global Variables
+        public static AudioClip LastSoundPlayed { get { return lastSoundPlayed; } set { lastSoundPlayed = value; } }
+
         // Mod Sounds
-        public static AudioClip[] repairToolClips = { null, null, null };
+        private static AudioClip lastSoundPlayed = null;
+        public static AudioClip[] armorTrimmingClips = { null, null, null, null };
+        private static AudioClip trimmingToolBrokeClip = null;
 
         public DaggerfallAudioSource dfAudioSource;
 
@@ -69,12 +74,14 @@ namespace TrimmableArmor
             bool success = true;
 
             // Trimmable Armor Clips
-            success &= modManager.TryGetAsset("Blade_Sharpen_WhetStone_1", false, out repairToolClips[0]);
-            success &= modManager.TryGetAsset("Sewing_Kit_Repair_1", false, out repairToolClips[1]);
-            success &= modManager.TryGetAsset("Armorers_Hammer_Repair_1", false, out repairToolClips[2]);
+            success &= modManager.TryGetAsset("Chiseling_Metal_1", false, out armorTrimmingClips[0]);
+            success &= modManager.TryGetAsset("Chiseling_Metal_2", false, out armorTrimmingClips[1]);
+            success &= modManager.TryGetAsset("Chiseling_Stone_1", false, out armorTrimmingClips[2]);
+            success &= modManager.TryGetAsset("Chiseling_Stone_2", false, out armorTrimmingClips[3]);
+            success &= modManager.TryGetAsset("Chiseling_Stone_3_Breaking_Sound", false, out trimmingToolBrokeClip);
 
             if (!success)
-                throw new Exception("RepairTools: Missing sound asset");
+                throw new Exception("TrimmableArmor: Missing sound asset");
         }
 
         public static void TrimmableArmorStockShelves_OnLootSpawned(object sender, ContainerLootSpawnedEventArgs e) // Populates shop shelves when opened, depending on the shop type.
@@ -86,7 +93,7 @@ namespace TrimmableArmor
             {
                 if (interior.BuildingData.BuildingType == DaggerfallConnect.DFLocation.BuildingTypes.Armorer)
                 {
-                    if (DaggerfallWorkshop.Game.Utility.Dice100.SuccessRoll(4 * interior.BuildingData.Quality))
+                    if (DaggerfallWorkshop.Game.Utility.Dice100.SuccessRoll(5 * interior.BuildingData.Quality))
                     {
                         item = ItemBuilder.CreateItem(ItemGroups.UselessItems2, ItemArmorTrimmingTool.templateIndex);
                     }
@@ -96,13 +103,47 @@ namespace TrimmableArmor
             if (item != null) { e.Loot.AddItem(item); }
         }
 
+        public static AudioClip RollRandomAudioClip(AudioClip[] clips)
+        {
+            int randChoice = UnityEngine.Random.Range(0, clips.Length);
+            AudioClip clip = clips[randChoice];
+
+            if (clip == LastSoundPlayed)
+            {
+                if (randChoice == 0)
+                    randChoice++;
+                else if (randChoice == clips.Length - 1)
+                    randChoice--;
+                else
+                    randChoice = CoinFlip() ? randChoice + 1 : randChoice - 1;
+
+                clip = clips[randChoice];
+            }
+            LastSoundPlayed = clip;
+            return clip;
+        }
+
+        public static AudioClip GetTrimmingToolUseClip(bool toolBroke)
+        {
+            AudioClip clip = null;
+
+            if (toolBroke)
+                clip = trimmingToolBrokeClip;
+            else
+                clip = RollRandomAudioClip(armorTrimmingClips);
+
+            if (clip == null)
+                clip = armorTrimmingClips[0];
+
+            return clip;
+        }
+
         public static void TrimmableArmorCommands()
         {
             Debug.Log("[TrimmableArmor] Trying to register console commands.");
             try
             {
                 ConsoleCommandsDatabase.RegisterCommand(GiveTools.name, GiveTools.description, GiveTools.usage, GiveTools.Execute);
-                ConsoleCommandsDatabase.RegisterCommand(MakeMagicItems.name, MakeMagicItems.description, MakeMagicItems.usage, MakeMagicItems.Execute);
             }
             catch (Exception e)
             {
@@ -127,24 +168,12 @@ namespace TrimmableArmor
             }
         }
 
-        private static class MakeMagicItems
+        public static bool CoinFlip()
         {
-            public static readonly string name = "addmagicarmor";
-            public static readonly string description = "Adds A Bunch Of Random Magic Armor Pieces For Testing.";
-            public static readonly string usage = "addmagicarmor";
-
-            public static string Execute(params string[] args)
-            {
-                DaggerfallWorkshop.Game.Entity.PlayerEntity playerEntity = GameManager.Instance.PlayerEntity;
-
-                for (int i = 0; i < 16; i++)
-                {
-                    DaggerfallUnityItem item = ItemBuilder.CreateRegularMagicItem(-1, 20, GameManager.Instance.PlayerEntity.Gender, GameManager.Instance.PlayerEntity.Race);
-                    playerEntity.Items.AddItem(item);
-                }
-
-                return "Gave you a bunch of random magic armor.";
-            }
+            if (UnityEngine.Random.Range(0, 1 + 1) == 0)
+                return false;
+            else
+                return true;
         }
     }
 }

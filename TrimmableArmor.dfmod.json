@@ -10,6 +10,11 @@
         "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/ItemTemplates.json",
         "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/Scripts/ItemsTrimmingTools.cs",
         "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/Scripts/TrimmableArmorMain.cs",
+        "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/Audio/Chiseling_Stone_2.ogg",
+        "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/Audio/Chiseling_Stone_1.ogg",
+        "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/Audio/Chiseling_Metal_1.ogg",
+        "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/Audio/Chiseling_Stone_3_Breaking_Sound.ogg",
+        "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/Audio/Chiseling_Metal_2.ogg",
         "Assets/Game/Mods/DFU-Mod_Trimmable-Armor/Textures/4760_0-0.png"
     ],
     "Dependencies": []

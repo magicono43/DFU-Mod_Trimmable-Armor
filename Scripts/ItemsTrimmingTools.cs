@@ -59,8 +59,8 @@ namespace TrimmableArmor
                 {
                     ValidTrimmableItems.Add(item);
                     string validItemName = "";
-                    if (item.IsEquipped) { validItemName = "(Equipped)" + "      " + item.LongName; }
-                    else { validItemName = "      " + item.LongName; }
+                    if (item.IsEquipped) { validItemName = item.LongName + " (Equipped)"; }
+                    else { validItemName = item.LongName; }
                     validArmorPicker.ListBox.AddItem(validItemName);
                 }
             }
@@ -96,7 +96,7 @@ namespace TrimmableArmor
                 for (int i = 0; i < TrimVariantChoices.Count; i++)
                 {
                     string entryName = "";
-                    if (FindCurrentVariant(itemToChooseVariant) == i) { entryName = "(Current) " + TrimVariantChoices[i]; }
+                    if (FindCurrentVariant(itemToChooseVariant) == i) { entryName = TrimVariantChoices[i] + " (Current)"; }
                     else { entryName = TrimVariantChoices[i]; }
                     armorVariantPicker.ListBox.AddItem(entryName);
                 }
@@ -126,9 +126,9 @@ namespace TrimmableArmor
                     if (trimThisItem.IsEquipped)
                     {
                         trimThisItem.UnequipItem(playerEntity);
-                        playerEntity.ItemEquipTable.EquipItem(newItem);
                         playerEntity.Items.RemoveItem(trimThisItem);
                         playerEntity.Items.AddItem(newItem);
+                        //playerEntity.ItemEquipTable.EquipItem(newItem); // Can't do this now unfortunately, for some reason the armor value of that slot bugs out if done in this order.
                     }
                     else
                     {
@@ -137,6 +137,7 @@ namespace TrimmableArmor
                     }
                     bool toolBroke = currentCondition <= 10;
                     LowerConditionWorkaround(10, playerEntity, trimmingToolCollection); // Damages trimming tool condition.
+                    PlayAudioTrack(toolBroke);
                     ShowCustomTextBox(toolBroke, newItem); // Shows the specific text-box after trimming an item.
                 }
                 else
@@ -162,39 +163,39 @@ namespace TrimmableArmor
                 case (int)Armor.Cuirass:
                     if (gender == Genders.Female)
                     {
-                        names.Add("1." + "      " + "Full Skirted Breastplate");
-                        names.Add("2." + "      " + "Segmented Breastplate");
-                        names.Add("3." + "      " + "Chain-Skirted Half-Breastplate");
+                        names.Add("1. " + "Full Skirted Breastplate");
+                        names.Add("2. " + "Segmented Breastplate");
+                        names.Add("3. " + "Chain-Skirted Half-Breastplate");
                     }
                     else
                     {
-                        names.Add("1." + "      " + "Shaped Breastplate");
-                        names.Add("2." + "      " + "Smooth Breastplate");
-                        names.Add("3." + "      " + "Full Skirted Breastplate");
+                        names.Add("1. " + "Shaped Breastplate");
+                        names.Add("2. " + "Smooth Breastplate");
+                        names.Add("3. " + "Full Skirted Breastplate");
                     } break;
                 case (int)Armor.Greaves:
-                    names.Add("1." + "      " + "Smooth Plate Greaves");
-                    names.Add("2." + "      " + "Chain-Skirted Smooth Plate Greaves");
-                    names.Add("3." + "      " + "Segmented Plate Greaves");
-                    names.Add("4." + "      " + "Chain-Skirted Segmented Plate Greaves");
+                    names.Add("1. " + "Smooth Plate Greaves");
+                    names.Add("2. " + "Chain-Skirted Smooth Plate Greaves");
+                    names.Add("3. " + "Segmented Plate Greaves");
+                    names.Add("4. " + "Chain-Skirted Segmented Plate Greaves");
                     break;
                 case (int)Armor.Left_Pauldron:
                 case (int)Armor.Right_Pauldron:
-                    names.Add("1." + "      " + "Plate Pauldron");
-                    names.Add("2." + "      " + "Collared Plate Pauldron");
-                    names.Add("3." + "      " + "Collared Gold-Trimmed Plate Pauldron");
+                    names.Add("1. " + "Plate Pauldron");
+                    names.Add("2. " + "Collared Plate Pauldron");
+                    names.Add("3. " + "Collared Gold-Trimmed Plate Pauldron");
                     break;
                 case (int)Armor.Helm:
-                    names.Add("1." + "      " + "Spangenhelm");
-                    names.Add("2." + "      " + "Norman Nasal Helm");
-                    names.Add("3." + "      " + "Barbute Helm");
-                    names.Add("4." + "      " + "Red Crested Galea");
-                    names.Add("5." + "      " + "Armet With Blue Tassel");
-                    names.Add("6." + "      " + "Armet With Horns");
+                    names.Add("1. " + "Spangenhelm");
+                    names.Add("2. " + "Norman Nasal Helm");
+                    names.Add("3. " + "Barbute Helm");
+                    names.Add("4. " + "Red Crested Galea");
+                    names.Add("5. " + "Armet With Blue Tassel");
+                    names.Add("6. " + "Armet With Horns");
                     break;
                 case (int)Armor.Boots:
-                    names.Add("1." + "      " + "Plate Boots");
-                    names.Add("2." + "      " + "Gold-Trimmed Plate Boots");
+                    names.Add("1. " + "Plate Boots");
+                    names.Add("2. " + "Gold-Trimmed Plate Boots");
                     break;
                 case (int)Armor.Gauntlets:
                 case (int)Armor.Buckler:
@@ -345,6 +346,18 @@ namespace TrimmableArmor
             return newItem;
         }
 
+        // Like DaggerfallUnityItem's LowerCondition, but without taking DaggerfallUnity.Settings.AllowMagicRepairs into account
+        public void LowerConditionWorkaround(int amount, DaggerfallEntity unequipFromOwner = null, ItemCollection removeFromCollectionWhenBreaks = null)
+        {
+            currentCondition -= amount;
+            if (currentCondition <= 0)
+            {
+                currentCondition = 0;
+                ItemBreaks(unequipFromOwner);
+                removeFromCollectionWhenBreaks.RemoveItem(this);
+            }
+        }
+
         // Creates the custom text-box after trimming an item.
         public void ShowCustomTextBox(bool toolBroke, DaggerfallUnityItem itemToTrim)
         {
@@ -372,15 +385,14 @@ namespace TrimmableArmor
             uiManager.PushWindow(itemTrimmedText);
         }
 
-        // Like DaggerfallUnityItem's LowerCondition, but without taking DaggerfallUnity.Settings.AllowMagicRepairs into account
-        public void LowerConditionWorkaround(int amount, DaggerfallEntity unequipFromOwner = null, ItemCollection removeFromCollectionWhenBreaks = null)
+        public void PlayAudioTrack(bool toolBroke)
         {
-            currentCondition -= amount;
-            if (currentCondition <= 0)
+            DaggerfallAudioSource dfAudioSource = TrimmableArmorMain.Instance.dfAudioSource;
+            AudioClip clip = TrimmableArmorMain.GetTrimmingToolUseClip(toolBroke);
+
+            if (dfAudioSource != null && !dfAudioSource.IsPlaying()) // Meant to keep trimming sounds from overlapping each other.
             {
-                currentCondition = 0;
-                ItemBreaks(unequipFromOwner);
-                removeFromCollectionWhenBreaks.RemoveItem(this);
+                dfAudioSource.AudioSource.PlayOneShot(clip, 1.2f * DaggerfallUnity.Settings.SoundVolume);
             }
         }
     }
